@@ -2,6 +2,7 @@ import { getSiteConfig } from '@/lib/config';
 import { VPNHero } from '@/components/business/VPNHero';
 import { GamingHero } from '@/components/business/GamingHero';
 import { SaaSHero } from '@/components/business/SaaSHero';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getSiteUrls } from '@/lib/domains';
 import Link from 'next/link';
 
@@ -17,28 +18,26 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   
   // If no site parameter and no subdomain, show site selector
   if (!params.site && !siteIdFromMiddleware) {
-    const siteUrls = getSiteUrls();
-    
     const sites = [
       {
         id: 'vpn-service-01',
         name: 'VPN Service',
         description: 'SecureVPN Pro - Fast & Secure VPN Service',
-        url: siteUrls.vpn,
+        url: '/?site=vpn',
         color: 'bg-blue-500'
       },
       {
         id: 'saas-tools-01', 
         name: 'SaaS Tools',
         description: 'WebTools Pro - Professional Web Development Tools',
-        url: siteUrls.saas,
+        url: '/?site=saas',
         color: 'bg-purple-500'
       },
       {
         id: 'cs2-skins-01',
         name: 'CS2 Skins',
         description: 'CS2 Skins Market - Trade and Buy CS2 Skins',
-        url: siteUrls.gaming,
+        url: '/?site=gaming',
         color: 'bg-red-500'
       }
     ];

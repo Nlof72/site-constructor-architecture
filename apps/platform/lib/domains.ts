@@ -7,9 +7,8 @@ export function getSubdomainUrl(subdomain: string): string {
     return `http://${subdomain}.localhost:3000`;
   }
   
-  // In production, use the actual domain
-  // You can customize this based on your actual domain
-  const baseDomain = process.env.VERCEL_URL || 'yourdomain.com';
+  // In production, use Vercel domain with subdomain
+  const baseDomain = 'site-constructor-architecture.vercel.app';
   return `https://${subdomain}.${baseDomain}`;
 }
 
