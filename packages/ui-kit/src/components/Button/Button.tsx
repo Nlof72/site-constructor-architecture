@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
-import type { ThemeColors } from '../../theme/types';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
