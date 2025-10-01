@@ -1,102 +1,43 @@
-name: Deploy Site
+name: Deploy to Vercel
 
 on:
   push:
-    branches:
-      - main
-      - staging
-  workflow_dispatch:
-    inputs:
-      site_id:
-        description: 'Site ID to deploy'
-        required: true
-        type: string
-      environment:
-        description: 'Environment'
-        required: true
-        type: choice
-        options:
-          - production
-          - staging
-          - development
-
-env:
-  NODE_VERSION: '18.x'
-  PNPM_VERSION: '8.15.0'
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        # Dynamic site deployment - can be configured via workflow_dispatch
-        site: ${{ github.event.inputs.site_id && fromJSON(format('["{0}"]', github.event.inputs.site_id)) || fromJSON('["vpn-service-01", "cs2-skins-01", "saas-tools-01"]') }}
-    
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
+        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
+          node-version: '18'
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Type check
-        run: pnpm type-check
-
+        run: pnpm install
+        
       - name: Lint
         run: pnpm lint
-
-      - name: Load site configuration
-        id: config
-        run: |
-          SITE_CONFIG=$(cat configs/sites/${{ matrix.site }}.json)
-          SITE_DOMAIN=$(echo $SITE_CONFIG | jq -r '.domain')
-          echo "domain=$SITE_DOMAIN" >> $GITHUB_OUTPUT
-
-      - name: Build site
-        env:
-          SITE_ID: ${{ matrix.site }}
-          NEXT_PUBLIC_SITE_ID: ${{ matrix.site }}
-          NODE_ENV: production
-        run: pnpm build --filter=@platform/app
-
-      - name: Deploy to Vercel (Production)
-        if: github.ref == 'refs/heads/main'
+        
+      - name: Build
+        run: pnpm build
+        
+      - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./apps/platform
           vercel-args: '--prod'
-          working-directory: ./apps/platform
-        env:
-          SITE_ID: ${{ matrix.site }}
-
-      - name: Deploy to Vercel (Staging)
-        if: github.ref == 'refs/heads/staging'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./apps/platform
-        env:
-          SITE_ID: ${{ matrix.site }}
-
-      - name: Notify deployment status
-        if: always()
-        run: |
-          echo "🚀 Deployment completed for ${{ matrix.site }}"
-          echo "🌐 Domain: ${{ steps.config.outputs.domain }}"
-          echo "📊 Status: ${{ job.status }}"
