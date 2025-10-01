@@ -17,5 +17,10 @@
   ],
   "env": {
     "SITE_ID": "vpn-service-01"
+  },
+  "functions": {
+    "apps/platform/app/**/*.tsx": {
+      "runtime": "nodejs18.x"
+    }
   }
 }

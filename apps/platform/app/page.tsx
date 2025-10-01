@@ -5,14 +5,17 @@ import { SaaSHero } from '@/components/business/SaaSHero';
 import Link from 'next/link';
 
 interface HomePageProps {
-  searchParams: Promise<{ site?: string }>;
+  searchParams: Promise<{ site?: string; site_id?: string }>;
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
   
-  // If no site parameter, show site selector
-  if (!params.site) {
+  // Check if we have a site_id from middleware (subdomain detection)
+  const siteIdFromMiddleware = params.site_id;
+  
+  // If no site parameter and no subdomain, show site selector
+  if (!params.site && !siteIdFromMiddleware) {
     const sites = [
       {
         id: 'vpn-service-01',
@@ -43,9 +46,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <h1 className="text-4xl font-bold text-center mb-8">
             Multi-Site Platform
           </h1>
-          <p className="text-center text-gray-600 mb-12">
+          <p className="text-center text-gray-600 mb-8">
             Choose a site to view different business configurations
           </p>
+          
+          <div className="text-center mb-12">
+            <Link 
+              href="/domains"
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Setup Custom Domains
+            </Link>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-6">
             {sites.map((site) => (
@@ -65,11 +77,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     );
   }
 
-  // Override SITE_ID based on query parameter
-  process.env.SITE_ID = params.site === 'vpn' ? 'vpn-service-01' :
-                       params.site === 'saas' ? 'saas-tools-01' :
-                       params.site === 'gaming' ? 'cs2-skins-01' :
-                       process.env.SITE_ID;
+  // Override SITE_ID based on query parameter or subdomain
+  if (params.site) {
+    process.env.SITE_ID = params.site === 'vpn' ? 'vpn-service-01' :
+                         params.site === 'saas' ? 'saas-tools-01' :
+                         params.site === 'gaming' ? 'cs2-skins-01' :
+                         process.env.SITE_ID;
+  } else if (siteIdFromMiddleware) {
+    process.env.SITE_ID = siteIdFromMiddleware;
+  }
 
   const config = await getSiteConfig();
 

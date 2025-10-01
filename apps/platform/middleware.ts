@@ -2,15 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
+  const hostname = request.headers.get('host') || '';
   
-  // Set SITE_ID based on subdomain or query parameter
-  if (url.hostname.includes('vpn') || url.searchParams.get('site') === 'vpn') {
-    url.searchParams.set('site_id', 'vpn-service-01');
-  } else if (url.hostname.includes('saas') || url.searchParams.get('site') === 'saas') {
-    url.searchParams.set('site_id', 'saas-tools-01');
-  } else if (url.hostname.includes('gaming') || url.hostname.includes('cs2') || url.searchParams.get('site') === 'gaming') {
-    url.searchParams.set('site_id', 'cs2-skins-01');
+  // Extract subdomain
+  const subdomain = hostname.split('.')[0];
+  
+  // Set SITE_ID based on subdomain
+  let siteId = 'vpn-service-01'; // default
+  
+  if (subdomain === 'vpn' || subdomain === 'securevpn') {
+    siteId = 'vpn-service-01';
+  } else if (subdomain === 'saas' || subdomain === 'webtools') {
+    siteId = 'saas-tools-01';
+  } else if (subdomain === 'gaming' || subdomain === 'cs2' || subdomain === 'skins') {
+    siteId = 'cs2-skins-01';
   }
+  
+  // Add site_id to search params for the page to use
+  url.searchParams.set('site_id', siteId);
   
   return NextResponse.rewrite(url);
 }
