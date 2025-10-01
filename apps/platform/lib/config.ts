@@ -6,8 +6,7 @@ import { join } from 'path';
  * Get site configuration based on environment or domain
  */
 export async function getSiteConfig(): Promise<SiteConfig> {
-  console.log(process.env.SITE_ID, 'process.env');
-  const siteId = process.env.SITE_ID || process.env.NEXT_PUBLIC_SITE_ID;
+  const siteId = process.env.SITE_ID || process.env.NEXT_PUBLIC_SITE_ID || 'vpn-service-01';
   
   if (!siteId) {
     throw new Error('SITE_ID environment variable is not set');
