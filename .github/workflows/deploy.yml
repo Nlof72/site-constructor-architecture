@@ -32,12 +32,16 @@ jobs:
         
       - name: Build
         run: pnpm build
+        env:
+          SITE_ID: vpn-service-01
+        
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
         
       - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./apps/platform
-          vercel-args: '--prod'
+        run: |
+          cd apps/platform
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
