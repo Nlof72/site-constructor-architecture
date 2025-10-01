@@ -5,12 +5,14 @@ import { SaaSHero } from '@/components/business/SaaSHero';
 import Link from 'next/link';
 
 interface HomePageProps {
-  searchParams: { site?: string };
+  searchParams: Promise<{ site?: string }>;
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  
   // If no site parameter, show site selector
-  if (!searchParams.site) {
+  if (!params.site) {
     const sites = [
       {
         id: 'vpn-service-01',
@@ -64,9 +66,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   }
 
   // Override SITE_ID based on query parameter
-  process.env.SITE_ID = searchParams.site === 'vpn' ? 'vpn-service-01' :
-                       searchParams.site === 'saas' ? 'saas-tools-01' :
-                       searchParams.site === 'gaming' ? 'cs2-skins-01' :
+  process.env.SITE_ID = params.site === 'vpn' ? 'vpn-service-01' :
+                       params.site === 'saas' ? 'saas-tools-01' :
+                       params.site === 'gaming' ? 'cs2-skins-01' :
                        process.env.SITE_ID;
 
   const config = await getSiteConfig();
