@@ -2,8 +2,6 @@ import { getSiteConfig } from '@/lib/config';
 import { VPNHero } from '@/components/business/VPNHero';
 import { GamingHero } from '@/components/business/GamingHero';
 import { SaaSHero } from '@/components/business/SaaSHero';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getSiteUrls } from '@/lib/domains';
 import Link from 'next/link';
 
 interface HomePageProps {
