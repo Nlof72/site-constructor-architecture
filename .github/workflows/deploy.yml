@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Deploy Multi-Site Platform to Vercel
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Lint
         run: pnpm lint
         
-      - name: Build
+      - name: Build Platform
         run: pnpm build
         env:
           SITE_ID: vpn-service-01

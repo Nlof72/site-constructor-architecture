@@ -6,7 +6,13 @@ import { join } from 'path';
  * Get site configuration based on environment or domain
  */
 export async function getSiteConfig(): Promise<SiteConfig> {
-  const siteId = process.env.SITE_ID || process.env.NEXT_PUBLIC_SITE_ID || 'vpn-service-01';
+  // Try to get SITE_ID from various sources
+  const siteId = process.env.SITE_ID || 
+                 process.env.NEXT_PUBLIC_SITE_ID || 
+                 process.env.VERCEL_URL?.includes('vpn') ? 'vpn-service-01' :
+                 process.env.VERCEL_URL?.includes('saas') ? 'saas-tools-01' :
+                 process.env.VERCEL_URL?.includes('gaming') || process.env.VERCEL_URL?.includes('cs2') ? 'cs2-skins-01' :
+                 'vpn-service-01'; // default fallback
   
   if (!siteId) {
     throw new Error('SITE_ID environment variable is not set');
