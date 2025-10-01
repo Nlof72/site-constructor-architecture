@@ -2,6 +2,7 @@ import { getSiteConfig } from '@/lib/config';
 import { VPNHero } from '@/components/business/VPNHero';
 import { GamingHero } from '@/components/business/GamingHero';
 import { SaaSHero } from '@/components/business/SaaSHero';
+import { getSiteUrls } from '@/lib/domains';
 import Link from 'next/link';
 
 interface HomePageProps {
@@ -16,26 +17,28 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   
   // If no site parameter and no subdomain, show site selector
   if (!params.site && !siteIdFromMiddleware) {
+    const siteUrls = getSiteUrls();
+    
     const sites = [
       {
         id: 'vpn-service-01',
         name: 'VPN Service',
         description: 'SecureVPN Pro - Fast & Secure VPN Service',
-        url: '/?site=vpn',
+        url: siteUrls.vpn,
         color: 'bg-blue-500'
       },
       {
         id: 'saas-tools-01', 
         name: 'SaaS Tools',
         description: 'WebTools Pro - Professional Web Development Tools',
-        url: '/?site=saas',
+        url: siteUrls.saas,
         color: 'bg-purple-500'
       },
       {
         id: 'cs2-skins-01',
         name: 'CS2 Skins',
         description: 'CS2 Skins Market - Trade and Buy CS2 Skins',
-        url: '/?site=gaming',
+        url: siteUrls.gaming,
         color: 'bg-red-500'
       }
     ];
@@ -50,14 +53,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             Choose a site to view different business configurations
           </p>
           
-          <div className="text-center mb-12">
-            <Link 
-              href="/domains"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Setup Custom Domains
-            </Link>
-          </div>
           
           <div className="grid md:grid-cols-3 gap-6">
             {sites.map((site) => (
